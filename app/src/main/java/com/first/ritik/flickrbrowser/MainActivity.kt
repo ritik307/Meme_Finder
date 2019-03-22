@@ -1,5 +1,6 @@
 package com.first.ritik.flickrbrowser
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,7 @@ import java.net.URI
 
 
 private const val TAG="Main_Activity" //to make a value static
-class MainActivity : AppCompatActivity(),GetRawData.OnDownloadComplete,GetFlickrJsonData.OnDataAvailable,RecyclerItemClickListener.OnRecyclerClickListener {
+class MainActivity : BaseActivity(),GetRawData.OnDownloadComplete,GetFlickrJsonData.OnDataAvailable,RecyclerItemClickListener.OnRecyclerClickListener {
 
     private val flickrRecyclerViewAdapter=FlickrRecyclerViewAdapter(ArrayList())
 
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity(),GetRawData.OnDownloadComplete,GetFlickr
         Log.d(TAG,"onCreate called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        activeToolbar(false)
 
         recycler_view.layoutManager=LinearLayoutManager(this)   //TO UNDERSTAND RECYCLERVIEW:=> https://contextneutral.com/story/understanding-recyclerview-part-1-the-basics
         recycler_view.adapter= flickrRecyclerViewAdapter
@@ -47,7 +48,13 @@ class MainActivity : AppCompatActivity(),GetRawData.OnDownloadComplete,GetFlickr
 
     override fun onItemClick(view: View, position: Int) {
         Log.d(TAG,"onItemClick starts ")
-        Toast.makeText(this,"Normal tap at position $position",Toast.LENGTH_SHORT).show()
+        val photo=flickrRecyclerViewAdapter.getPhoto(position)
+        if(photo !=null)
+        {
+            val intent= Intent(this,PhotoDetailsActivity::class.java)
+            intent.putExtra("PHOTO_TRANSFER",photo)
+            startActivity(intent)
+        }
     }
 
     override fun onItemLongClick(view: View, position: Int) {
