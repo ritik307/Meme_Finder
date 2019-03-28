@@ -3,17 +3,14 @@ package com.first.ritik.flickrbrowser
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity;
+import android.preference.PreferenceManager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.net.URI
 
 
 private const val TAG="Main_Activity" //to make a value static
@@ -27,15 +24,10 @@ class MainActivity : BaseActivity(),GetRawData.OnDownloadComplete,GetFlickrJsonD
         setContentView(R.layout.activity_main)
         activeToolbar(false)
 
-        recycler_view.layoutManager=LinearLayoutManager(this)   //TO UNDERSTAND RECYCLERVIEW:=> https://contextneutral.com/story/understanding-recyclerview-part-1-the-basics
-        recycler_view.adapter= flickrRecyclerViewAdapter
-
-        recycler_view.addOnItemTouchListener(RecyclerItemClickListener(this,recycler_view,this))
-
-        val url = createURI("https://api.flickr.com/services/feeds/photos_public.gne","android,oreo","en-us",true)
-        val getRawData = GetRawData(this)
-        getRawData.execute(url)
-
+        activeToolbar(false)
+        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.addOnItemTouchListener(RecyclerItemClickListener(this, recycler_view, this))
+        recycler_view.adapter = flickrRecyclerViewAdapter
 
 //        fab.setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -86,7 +78,10 @@ class MainActivity : BaseActivity(),GetRawData.OnDownloadComplete,GetFlickrJsonD
         // as you specify a parent activity in AndroidManifest.xml.
         Log.d(TAG,"onOptionItemSelected called")
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_search -> {
+                startActivity(Intent(this,SearchActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -111,6 +106,19 @@ class MainActivity : BaseActivity(),GetRawData.OnDownloadComplete,GetFlickrJsonD
     }
 
     override fun onError(E: Exception) {
-        Log.d(TAG,"onError called with excetion ${E.message}")
+        Log.e(TAG,"onError called with excetion ${E.message}")
+    }
+
+    override fun onResume() {
+        Log.d(TAG," onResume starts ")
+        super.onResume()
+
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val queryResult = sharedPref.getString("FLICKR_QUERY","")
+        if(queryResult.isNotEmpty()){
+            val url = createURI("https://api.flickr.com/services/feeds/photos_public.gne",queryResult,"en-us",true)
+            val getRawData = GetRawData(this)
+            getRawData.execute(url)
+        }
     }
 }

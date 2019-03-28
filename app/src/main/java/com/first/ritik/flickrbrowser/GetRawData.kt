@@ -10,10 +10,9 @@ import java.net.URL
 
 
 enum class DownloadStatus {
-OK,IDLE,NOT_INITIALIZED,FAILED_OR_EMPTY,PERMISSION_ERROR,ERROR
+OK,IDLE,NOT_INITIALISED,FAILED_OR_EMPTY,PERMISSION_ERROR,ERROR
 }
 class GetRawData(private val listener:MainActivity):AsyncTask<String,Void,String>() {
-
     private val TAG="GetRawData"
     private var downloadStatus=DownloadStatus.IDLE
 
@@ -28,17 +27,17 @@ class GetRawData(private val listener:MainActivity):AsyncTask<String,Void,String
     override fun doInBackground(vararg params: String?): String {
         Log.d(TAG,"doInBcakground called ")
         if(params[0]==null) {
-            downloadStatus=DownloadStatus.NOT_INITIALIZED
+            downloadStatus=DownloadStatus.NOT_INITIALISED
             return "No URL specified"
         }
         try {
-            downloadStatus=DownloadStatus.OK
+            downloadStatus = DownloadStatus.OK
             return URL(params[0]).readText()
         }
         catch (e:Exception){
             val errorMessage=when(e){
                 is MalformedURLException ->{
-                    downloadStatus=DownloadStatus.NOT_INITIALIZED
+                    downloadStatus=DownloadStatus.NOT_INITIALISED
                     "doInBaackgorund: Invalid URL ${e.message}"
                 }
                 is IOException->{

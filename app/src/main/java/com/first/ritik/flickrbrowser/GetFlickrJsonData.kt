@@ -6,8 +6,8 @@ import android.util.Log
 import org.json.JSONException
 import org.json.JSONObject
 
-class GetFlickrJsonData(val listener: OnDataAvailable) : AsyncTask<String, Void, ArrayList<Photo>>() {
-    val TAG = "GetFlickrData"
+class GetFlickrJsonData(private val listener: OnDataAvailable) : AsyncTask<String, Void, ArrayList<Photo>>() {
+    private val TAG = "GetFlickrData"
 
 
     interface OnDataAvailable {
@@ -16,8 +16,10 @@ class GetFlickrJsonData(val listener: OnDataAvailable) : AsyncTask<String, Void,
     }
 
     override fun doInBackground(vararg params: String?): ArrayList<Photo> {
-        Log.d(TAG, "doInBackground")
-        var photoList = ArrayList<Photo>()
+        Log.d(TAG, "doInBackground starts")
+
+        val photoList = ArrayList<Photo>()
+
         try {
             val jsonData = JSONObject(params[0])
             val itemsArray = jsonData.getJSONArray("items")
@@ -50,9 +52,10 @@ class GetFlickrJsonData(val listener: OnDataAvailable) : AsyncTask<String, Void,
     }
 
     override fun onPostExecute(result: ArrayList<Photo>) {
-        Log.d(TAG, "onPostExecution")
+        Log.d(TAG, "onPostExecute starts")
         super.onPostExecute(result)
         listener.onDataAvailable(result)
-        Log.d(TAG, "onPostExecution ends")
+        Log.d(TAG, ".onPostExecute ends")
+
     }
 }

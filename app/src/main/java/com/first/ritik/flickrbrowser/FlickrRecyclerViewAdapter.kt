@@ -9,45 +9,47 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 
-class FlickrImageViewHolder(view:View):RecyclerView.ViewHolder(view)
-{
+class FlickrImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    var thumbnail:ImageView=view.findViewById(R.id.thumbnail)
-    var title:TextView=view.findViewById(R.id.title)
+    var thumbnail: ImageView = view.findViewById(R.id.thumbnail)
+    var title: TextView = view.findViewById(R.id.title)
 }
 
-class FlickrRecyclerViewAdapter(private var photoList : List<Photo>):RecyclerView.Adapter<FlickrImageViewHolder>() {
+class FlickrRecyclerViewAdapter(private var photoList: List<Photo>) : RecyclerView.Adapter<FlickrImageViewHolder>() {
 
-    val TAG="FlickrRecyclerViewAdapt" //cannot have more than 25 characters in Log Tag
+    val TAG = "FlickrRecyclerViewAdapt" //cannot have more than 25 characters in Log Tag
 
-    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): FlickrImageViewHolder {
-        Log.d(TAG,"")
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.browse,parent,false)
-        return FlickrImageViewHolder(view)
+    override fun getItemCount(): Int {
+//        Log.d(TAG, ".getItemCount called")
+        return if (photoList.isNotEmpty()) photoList.size else 0
     }
 
     fun loadNewData(newPhoto: List<Photo>) {
-        photoList=newPhoto
+        photoList = newPhoto
         notifyDataSetChanged()
     }
 
-    fun getPhoto(position:Int): Photo? {
-        return if(!photoList.isEmpty()) photoList[position] else null
+    fun getPhoto(position: Int): Photo? {
+        return if (photoList.isNotEmpty()) photoList[position] else null
     }
 
-    override fun getItemCount(): Int {
-        Log.d(TAG,".getItemCount")
-        return if(!photoList.isEmpty()) photoList.size else 0
-    }
+
 
     override fun onBindViewHolder(holder: FlickrImageViewHolder, position: Int) {
         //this method is called by the recyclerview when it want new data to be stored in a view holder
-        val photoItem=photoList[position]
+        val photoItem = photoList[position]
         Picasso.get().load(photoItem.photoUrl)
             .error(R.drawable.baseline_terrain_black_48dp)     //show the image when there is error
             .placeholder(R.drawable.baseline_terrain_black_48dp) //show the image when the requested image is not present IT JUST ACT AS A PLACEHOLDER
             .into(holder.thumbnail)
 
-        holder.title.text=photoItem.title
+        holder.title.text = photoItem.title
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FlickrImageViewHolder {
+        // Called by the layout manager when it needs a new view
+        Log.d(TAG, ".onCreateViewHolder new view requested")
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.browse, parent, false)
+        return FlickrImageViewHolder(view)
     }
 }
